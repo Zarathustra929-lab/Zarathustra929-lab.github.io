@@ -1,0 +1,384 @@
+/* ==============================================================
+ *  「雾与夜」 · 皮肤层
+ *  A skin for 《Thus Spoke Zarathustra》
+ *
+ *  注入点：_config.fluid.yml → custom_css
+ *  加载时机在主题 main.css 之后，同特异性下即可覆盖其默认值。
+ *
+ *  设计骨架取自博客主人文字里三个反复燃烧的意象：
+ *    雾 —— 「寻雾启事」「雾中随笔」，浅色模式的底色
+ *    夜 —— "从黑夜泅渡到下一个黎明"，深色模式
+ *    火 —— "篝火旁的思考者""火炬上的一点微光"，冷调里唯一的热源
+ *
+ *  基础明暗配色由 _config.fluid.yml 的 color 段提供，
+ *  此处只补充主题没有声明的扩展色，并重塑结构与排版。
+ * ============================================================== */
+
+
+/* --------------------------------------------------------------
+ *  一、调色板扩展
+ *
+ *  主题的 color-schema 只声明了它自己用到的变量，
+ *  这里补上皮肤需要的"火"色与纸面阴影，并跟随明暗切换。
+ * -------------------------------------------------------------- */
+:root {
+  --skin-accent: #a8802c;
+  --skin-accent-soft: rgba(168, 128, 44, .09);
+  --skin-rule: rgba(168, 128, 44, .30);
+  --skin-edge: rgba(120, 105, 75, .12);
+  --skin-shadow: 0 1px 2px rgba(74, 62, 38, .05), 0 18px 44px -24px rgba(74, 62, 38, .30);
+  --skin-mist: rgba(255, 255, 255, .50);
+  --skin-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", "Times New Roman", Georgia, serif;
+  --skin-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", Consolas, "SF Mono", Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-user-color-scheme]) {
+    --skin-accent: #d8ab5c;
+    --skin-accent-soft: rgba(216, 171, 92, .10);
+    --skin-rule: rgba(216, 171, 92, .28);
+    --skin-edge: rgba(255, 255, 255, .06);
+    --skin-shadow: 0 1px 2px rgba(0, 0, 0, .34), 0 18px 44px -22px rgba(0, 0, 0, .80);
+    --skin-mist: rgba(120, 140, 190, .07);
+  }
+}
+
+@media not print {
+  [data-user-color-scheme="dark"] {
+    --skin-accent: #d8ab5c;
+    --skin-accent-soft: rgba(216, 171, 92, .10);
+    --skin-rule: rgba(216, 171, 92, .28);
+    --skin-edge: rgba(255, 255, 255, .06);
+    --skin-shadow: 0 1px 2px rgba(0, 0, 0, .34), 0 18px 44px -22px rgba(0, 0, 0, .80);
+    --skin-mist: rgba(120, 140, 190, .07);
+  }
+}
+
+
+/* --------------------------------------------------------------
+ *  二、字体
+ *
+ *  这个博客的内容是长句哲思散文——史铁生、尼采、黄河、《我与地坛》，
+ *  字里行间是"墨迹枯干"与"箱箧"。衬线的承载感远胜无衬线黑体，
+ *  所以正文整体改用宋体栈，与主题默认的屏幕字体语言作别。
+ *
+ *  不引入外部字体 CDN：用系统字体栈，零请求、零闪烁、离线可构建。
+ * -------------------------------------------------------------- */
+html,
+body,
+.markdown-body,
+.navbar,
+.index-card,
+.footer-inner {
+  font-family: var(--skin-serif);
+}
+
+html {
+  /* 字距略放宽：中文衬线在屏幕上需要一点呼吸 */
+  letter-spacing: .025em;
+}
+
+/* 等宽区域必须收回字距，否则代码会散架 */
+.markdown-body code,
+.markdown-body pre,
+.markdown-body kbd,
+.markdown-body samp {
+  font-family: var(--skin-mono);
+  letter-spacing: 0;
+}
+
+
+/* --------------------------------------------------------------
+ *  三、正文排版
+ *
+ *  这里的长文动辄数千字不断行（《拾遗》一篇近三千字），
+ *  默认 1.6 的行高与紧凑段距读起来太挤，整体放宽。
+ *
+ *  .markdown-body 是文章页容器，.page-content 是「关于」等自定义页的容器，
+ *  两者都要照顾到。
+ * -------------------------------------------------------------- */
+.markdown-body,
+.page-content {
+  font-size: 1.06rem;
+  line-height: 1.95;
+  letter-spacing: .03em;
+}
+
+.markdown-body p,
+.page-content p {
+  margin-bottom: 1.35rem;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6,
+.page-content h1,
+.page-content h2,
+.page-content h3,
+.page-content h4,
+.page-content h5,
+.page-content h6 {
+  font-weight: 600;
+  letter-spacing: .05em;
+  margin-top: 2.6rem;
+  margin-bottom: 1rem;
+}
+
+/* 章名下的那条件线，用金色收口 */
+.markdown-body > h1,
+.markdown-body > h2,
+.page-content > h1,
+.page-content > h2 {
+  border-bottom: 1px solid var(--skin-rule);
+  padding-bottom: .6rem;
+}
+
+/* 引文用一条金线起头，不加底色 */
+.markdown-body blockquote,
+.page-content blockquote {
+  margin: 2rem 0;
+  padding: .2rem 0 .2rem 1.3rem;
+  border-left: 2px solid var(--skin-rule);
+  color: var(--sec-text-color);
+  font-size: 1.02rem;
+}
+
+.markdown-body blockquote p:last-child,
+.page-content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body a,
+.page-content a {
+  border-bottom: 1px solid var(--skin-rule);
+  transition: border-color .2s ease-in-out, color .2s ease-in-out;
+}
+
+.markdown-body a:hover,
+.page-content a:hover {
+  border-bottom-color: var(--skin-accent);
+}
+
+.markdown-body img,
+.page-content img {
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 12px 32px -18px rgba(74, 62, 38, .5);
+}
+
+/* 分隔线：一条居中的短金线，作为章节之间的停顿 */
+hr,
+.markdown-body hr,
+.page-content hr {
+  width: 4rem;
+  height: 0;
+  border: 0;
+  border-top: 1px solid var(--skin-rule);
+  margin: 3rem auto;
+}
+
+
+/* --------------------------------------------------------------
+ *  四、纸面
+ *
+ *  面板不再是浮在背景上的"卡片"，而更像一张摊开的纸：
+ *  圆角收到 2px、阴影压薄、边缘用一道极细的线收口。
+ *  背景加一层自顶部散开的微光，是"雾"的来源。
+ * -------------------------------------------------------------- */
+body {
+  background-image: radial-gradient(ellipse 90% 55% at 50% -8%, var(--skin-mist), transparent 72%);
+  background-repeat: no-repeat;
+}
+
+#board {
+  border-radius: 2px;
+  border: 1px solid var(--skin-edge);
+  box-shadow: var(--skin-shadow);
+}
+
+
+/* --------------------------------------------------------------
+ *  五、导航栏
+ *
+ *  默认的蓝灰是"技术博客"的语言，这里换成墨色（配色见 color 段）。
+ *  金线只在导航栏真正有了底色之后才出现——
+ *  首页顶部那张通栏头图上不该横着一道线。
+ * -------------------------------------------------------------- */
+.navbar {
+  box-shadow: none;
+}
+
+.navbar .navbar-col-show,
+.navbar.top-nav-collapse {
+  border-bottom: 1px solid var(--skin-rule);
+}
+
+.navbar .navbar-brand {
+  font-weight: 600;
+  letter-spacing: .07em;
+}
+
+.navbar .nav-item .nav-link {
+  font-size: .95rem;
+  letter-spacing: .1em;
+}
+
+
+/* --------------------------------------------------------------
+ *  六、头图
+ *
+ *  蒙版原本是一层平的纯黑，把照片压成了灰的。
+ *  换成暖墨色的纵向渐变：上端托住导航，中段放图透出来，
+ *  下端压暗，好接住往下滚动的视线。
+ *  这张头图本身是黄昏的暖金调（树林、空椅、远水），
+ *  中段给到 .44 才能让白字在亮水面上站得住。
+ *  蒙版带内联 style，优先级高于样式表，只能 !important。
+ * -------------------------------------------------------------- */
+.banner .mask {
+  background: linear-gradient(
+    180deg,
+    rgba(24, 22, 19, .62) 0%,
+    rgba(24, 22, 19, .44) 38%,
+    rgba(24, 22, 19, .50) 62%,
+    rgba(24, 22, 19, .78) 100%
+  ) !important;
+}
+
+.banner .banner-text .h2 {
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-shadow: 0 2px 28px rgba(0, 0, 0, .55);
+}
+
+.banner .banner-text .h2 #subtitle {
+  font-size: clamp(1.05rem, 2.3vw, 1.45rem);
+  line-height: 2;
+}
+
+
+/* --------------------------------------------------------------
+ *  七、日期戳
+ *
+ *  《拾遗》用 {% note %} 为每一段文字标记写作日期，
+ *  十来个日期是整篇文章的骨架与呼吸点。
+ *  默认的彩色圆角块太"网页"了，这里去掉底色与粗边，
+ *  只留一行疏字和一道拖向右侧的细线。
+ * -------------------------------------------------------------- */
+.note {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  padding: 0;
+  margin: 2.75rem 0 1rem;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent !important;
+  color: var(--skin-accent);
+  font-size: .8rem;
+  letter-spacing: .2em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* note 的内容会被 markdown 渲染成 <p>，
+   必须清掉段落边距与继承来的 1.95 行高，否则日期戳会被撑歪 */
+.note p {
+  margin: 0;
+  line-height: 1.2;
+}
+
+.note::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--skin-rule), transparent);
+}
+
+
+/* --------------------------------------------------------------
+ *  八、箱箧
+ *
+ *  正文里的 {% fold %} 折叠块，呼应主人反复写的"封入箱箧"。
+ * -------------------------------------------------------------- */
+.fold {
+  margin: 1.75rem 0;
+  border: 1px solid var(--skin-edge);
+  border-left: 2px solid var(--skin-rule);
+  border-radius: 2px;
+  background-color: var(--skin-accent-soft) !important;
+}
+
+.fold .fold-title {
+  padding: .6rem .9rem;
+  font-size: .88rem;
+  font-weight: 500;
+  letter-spacing: .08em;
+  color: var(--skin-accent);
+}
+
+.fold .fold-title .fold-arrow {
+  margin-right: .5rem;
+}
+
+.fold .fold-content {
+  padding: .25rem .95rem 1rem;
+  font-size: .95rem;
+  line-height: 1.85;
+  color: var(--sec-text-color);
+}
+
+
+/* --------------------------------------------------------------
+ *  九、首页、关于与页脚
+ * -------------------------------------------------------------- */
+.index-header {
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+.index-img img {
+  border-radius: 2px;
+}
+
+/* 头像从"贴上去的圆图"变成一枚压印：细金环 + 收薄的投影 */
+.about-avatar img {
+  border: 1px solid var(--skin-rule);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .08), 0 14px 34px -18px rgba(74, 62, 38, .55);
+}
+
+.footer-inner {
+  letter-spacing: .09em;
+}
+
+.footer-inner .statistics,
+.footer-inner .beian {
+  color: var(--sec-text-color);
+}
+
+
+/* --------------------------------------------------------------
+ *  十、细部
+ * -------------------------------------------------------------- */
+
+/* 加载进度条收成一道极细的金线 */
+#nprogress .bar {
+  height: 2px !important;
+  background: var(--skin-accent) !important;
+}
+
+#nprogress .bar .peg {
+  box-shadow: 0 0 10px var(--skin-accent), 0 0 5px var(--skin-accent) !important;
+}
+
+/* 滚动条更窄，不与正文抢注意力 */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+/* 选中文字时也留一点金 */
+::selection {
+  background: var(--skin-accent-soft);
+  color: var(--post-text-color);
+}
