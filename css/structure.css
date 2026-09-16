@@ -1,0 +1,304 @@
+/* ==============================================================
+ *  「现代古典」 · 结构层
+ *
+ *  加载于 skin.css 之后，负责布局层面的重构，配色仍由 skin.css 决定。
+ *  不修改主题本体、不动 HTML 结构，全部在现有 DOM 上完成。
+ *
+ *  三个改造方向：
+ *    现代 —— 留白、栅格、克制的过渡动效
+ *    精美 —— 字距与行高的细部推敲、悬停反馈
+ *    古典 —— 衬线、编号、首字下沉、双线分隔
+ * ============================================================== */
+
+
+/* --------------------------------------------------------------
+ *  一、首页：从「卡片流」到「期刊目录」
+ *
+ *  原本每篇是一个独立卡片，靠 margin 堆叠；现在改成一条条目录项：
+ *  左侧罗马数字编号，中间标题与摘要，底部一道细线收口。
+ *  整页读起来像一本期刊的目次页，而不是一堆信息块。
+ * -------------------------------------------------------------- */
+#board {
+  counter-reset: postidx;
+}
+
+.index-card {
+  counter-increment: postidx;
+  position: relative;
+  margin: 0;
+  padding: 2.75rem 0 2.5rem 4.25rem;
+  border-bottom: 1px solid var(--skin-rule);
+}
+
+/* 罗马数字编号 */
+.index-card::before {
+  content: counter(postidx, upper-roman);
+  position: absolute;
+  left: 0;
+  top: 3.05rem;
+  width: 3rem;
+  font-size: .72rem;
+  letter-spacing: .16em;
+  color: var(--skin-accent);
+  opacity: .85;
+  transition: transform .35s cubic-bezier(.2, .7, .3, 1), opacity .35s ease;
+}
+
+.index-card:hover::before {
+  transform: translateX(.3rem);
+  opacity: 1;
+}
+
+/* 标题：放大、放宽，允许折行（覆盖主题的 nowrap） */
+.index-header {
+  font-size: 1.42rem;
+  font-weight: 600;
+  line-height: 1.55;
+  letter-spacing: .035em;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  margin-bottom: .7rem;
+}
+
+.index-header a {
+  color: var(--post-heading-color);
+  transition: color .25s ease;
+}
+
+.index-card:hover .index-header a {
+  color: var(--skin-accent);
+}
+
+/* 摘要：三行封顶，灰色小字，行距放宽 */
+.index-excerpt {
+  display: block;
+  height: auto;
+  max-height: 3.5rem;
+  margin: 0 0 1rem;
+  font-size: .92rem;
+  line-height: 1.75;
+  letter-spacing: .02em;
+  color: var(--sec-text-color);
+  overflow: hidden;
+}
+
+.index-excerpt > div {
+  line-height: 1.75;
+  -webkit-line-clamp: 2;
+}
+
+/* 元信息行：去掉图标，让文字自己说话 */
+.index-btm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .35rem 1.4rem;
+  font-size: .76rem;
+  letter-spacing: .12em;
+  color: var(--sec-text-color);
+}
+
+.index-btm .iconfont {
+  display: none;
+}
+
+.index-btm .post-meta {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 !important;
+}
+
+.index-btm a {
+  color: var(--sec-text-color);
+  transition: color .25s ease;
+}
+
+.index-btm a:hover {
+  color: var(--skin-accent);
+}
+
+/* 日期用旧式数字，与罗马数字编号呼应 */
+.index-btm time {
+  font-variant-numeric: oldstyle-nums;
+  letter-spacing: .18em;
+}
+
+/* 最后一条不再画线，避免与分页器贴在一起 */
+.index-card:last-of-type {
+  border-bottom: 0;
+}
+
+
+/* --------------------------------------------------------------
+ *  二、文章页：从「网页」到「书页」
+ *
+ *  首字下沉是古典印刷最经济的装饰——一个放大的字就交代了"这里起首"。
+ *  中文方块字放大后本身就是一枚印章，不需要任何图形修饰。
+ * -------------------------------------------------------------- */
+.markdown-body > p:first-of-type::first-letter {
+  float: left;
+  font-size: 3.1em;
+  line-height: .88;
+  margin: .04em .12em 0 0;
+  color: var(--skin-accent);
+  font-weight: 500;
+}
+
+/* 注：若首段以引号起头，::first-letter 会连同引号一起放大——
+   这正是西文排版的「悬挂标点」，中文全角引号下沉后同样成立，故不特殊处理。 */
+
+/* 正文里的强调：不加粗、不换色，只用一道极淡的底纹 */
+.markdown-body strong {
+  font-weight: 600;
+  color: var(--post-heading-color);
+}
+
+
+/* --------------------------------------------------------------
+ *  三、标题与分隔：让每一层都有收口
+ * -------------------------------------------------------------- */
+
+/* 头图上的文章标题，下方压一道居中的短线 */
+.banner .banner-text .h2 #subtitle {
+  position: relative;
+  padding-bottom: 1.35rem;
+}
+
+.banner .banner-text .h2 #subtitle::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 2.75rem;
+  height: 1px;
+  background: rgba(255, 255, 255, .55);
+}
+
+/* 分隔线：一深一浅的双线，古典印刷里常见的手法 */
+hr,
+.markdown-body hr,
+.page-content hr {
+  border: 0;
+  border-top: 1px solid var(--skin-rule);
+  border-bottom: 1px solid var(--skin-edge);
+  height: 3px;
+  width: 5rem;
+  margin: 3.25rem auto;
+  background: transparent;
+}
+
+/* 章名：加一道极短的引线，让层次一眼可辨 */
+.markdown-body h2:not(:first-child)::before,
+.page-content h2:not(:first-child)::before {
+  content: "";
+  display: block;
+  width: 1.75rem;
+  height: 1px;
+  margin-bottom: .85rem;
+  background: var(--skin-accent);
+  opacity: .55;
+}
+
+
+/* --------------------------------------------------------------
+ *  四、导航与页脚：收小、放宽字距
+ * -------------------------------------------------------------- */
+.navbar .navbar-brand {
+  font-size: 1.08rem;
+  letter-spacing: .13em;
+}
+
+.navbar .nav-item .nav-link {
+  font-size: .84rem;
+  letter-spacing: .17em;
+  opacity: .88;
+  transition: opacity .25s ease, color .25s ease;
+}
+
+.navbar .nav-item .nav-link:hover {
+  opacity: 1;
+}
+
+.footer-inner {
+  font-size: .78rem;
+  letter-spacing: .12em;
+  color: var(--sec-text-color);
+}
+
+
+/* --------------------------------------------------------------
+ *  五、归档与分类页：沿用目录式排版
+ * -------------------------------------------------------------- */
+.archive-post-link,
+.category-post-link {
+  letter-spacing: .03em;
+}
+
+
+/* --------------------------------------------------------------
+ *  六、动效
+ *
+ *  只做两件事：按钮与链接的颜色过渡，目录项的编号位移。
+ *  统一走 prefers-reduced-motion，尊重系统的减弱动效设置。
+ * -------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .index-card,
+  .index-header a,
+  .index-btm a,
+  .navbar .nav-item .nav-link {
+    transition: color .25s ease, border-color .25s ease, opacity .25s ease;
+  }
+
+  .index-card::before {
+    transition: transform .35s cubic-bezier(.2, .7, .3, 1), opacity .35s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .index-card::before,
+  .index-card:hover::before {
+    transition: none;
+    transform: none;
+  }
+}
+
+
+/* --------------------------------------------------------------
+ *  七、窄屏适配
+ * -------------------------------------------------------------- */
+@media (max-width: 767px) {
+  .index-card {
+    padding: 2rem 0 1.85rem 2.6rem;
+  }
+
+  .index-card::before {
+    top: 2.3rem;
+    width: 2rem;
+    font-size: .68rem;
+  }
+
+  .index-header {
+    font-size: 1.2rem;
+  }
+
+  .index-excerpt {
+    font-size: .88rem;
+  }
+
+  /* 小屏上首字下沉会把行挤乱，关掉 */
+  .markdown-body > p:first-of-type::first-letter {
+    float: none;
+    font-size: inherit;
+    line-height: inherit;
+    margin: 0;
+    color: inherit;
+  }
+
+  hr,
+  .markdown-body hr,
+  .page-content hr {
+    margin: 2.5rem auto;
+  }
+}
